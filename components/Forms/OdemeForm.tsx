@@ -41,9 +41,7 @@ const OdemeForm: React.FC<OdemeFormProps> = ({
 
   const validateSchema = Yup.object().shape({
     karekod: Yup.string().required("Boş Olamaz"),
-    tutar: Yup.number()
-      .required("Boş Olamaz")
-      .positive("Tutar pozitif olmalıdır"),
+    tutar: Yup.number().required("Boş Olamaz"),
   });
 
   return (
