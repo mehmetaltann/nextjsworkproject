@@ -1,8 +1,8 @@
 import Grid from "@mui/material/Grid2";
 import HomeInfoBox from "./HomeInfoBox";
 import { memo, useMemo } from "react";
-import { Card, Stack, Typography, Box } from "@mui/material"; // Box ve useMemo eklendi
-import { Isletme } from "@/lib/types/types"; // Odeme import'u gereksiz
+import { Card, Stack, Typography, Box } from "@mui/material";
+import { Isletme } from "@/lib/types/types";
 
 interface HomeInfoSectionProps {
   isletme: Isletme;
@@ -40,26 +40,38 @@ const HomeInfoSection: React.FC<HomeInfoSectionProps> = ({ isletme }) => {
             <HomeInfoBox data={isletme.yetkili} title="Yetkili :" />
             <HomeInfoBox data={isletme.mail} title="Mail :" />
             <Stack direction={"row"} spacing={1} alignItems="baseline">
-              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+              <Typography
+                variant="subtitle1"
+                sx={{ color: "primary.main", fontWeight: 600 }}
+              >
                 Telefon :
               </Typography>
               <Box>
-                <Typography component="span" variant="subtitle1">
+                <Typography
+                  component="span"
+                  variant="subtitle1"
+                  sx={{ color: "primary.main" }}
+                >
                   {isletme.tel1}
                 </Typography>
-                {isletme.tel2 && (
-                  <Typography
-                    component="span"
-                    variant="subtitle1"
-                    sx={{ ml: 1, mr: 1 }}
-                  >
-                    /
-                  </Typography>
-                )}
-                {isletme.tel2 && (
-                  <Typography component="span" variant="subtitle1">
-                    {isletme.tel2}
-                  </Typography>
+
+                {isletme.tel2 && isletme.tel2 !== "0" && (
+                  <>
+                    <Typography
+                      component="span"
+                      variant="subtitle1"
+                      sx={{ ml: 1, mr: 1, color: "primary.main" }}
+                    >
+                      /
+                    </Typography>
+                    <Typography
+                      component="span"
+                      variant="subtitle1"
+                      sx={{ color: "primary.main" }}
+                    >
+                      {isletme.tel2}
+                    </Typography>
+                  </>
                 )}
               </Box>
             </Stack>
@@ -69,7 +81,6 @@ const HomeInfoSection: React.FC<HomeInfoSectionProps> = ({ isletme }) => {
             <HomeInfoBox data={isletme.adres} title="Adres :" />
             <HomeInfoBox data={isletme.uets} title="UETS :" />
           </Stack>
-
           <HomeInfoBox data={totalPayment} para="TL" title="Toplam Ödeme :" />
         </Stack>
       </Grid>

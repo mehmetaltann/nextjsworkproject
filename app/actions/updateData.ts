@@ -9,6 +9,14 @@ interface UpdateResponse {
   status: boolean;
 }
 
+interface ProjeUpdateData {
+  durum?: string;
+  takipTarihi?: string;
+  [key: string]: any;
+}
+
+const DEFAULT_TAKIP_TARIHI = "09.09.2087";
+
 export const updateIsletme = async (
   _id: string,
   formData: any
@@ -46,17 +54,21 @@ export const updateProje = async (
   projeId: string,
   formData: any
 ): Promise<UpdateResponse> => {
+  const updateData = { ...formData };
+  if (updateData.durum && updateData.durum !== "Devam Ediyor") {
+    updateData.takipTarihi = DEFAULT_TAKIP_TARIHI;
+  }
   const newData = Object.fromEntries(
-    Object.entries(formData).map(([k, v]) => [`projeler.$.${k}`, v])
+    Object.entries(updateData).map(([k, v]) => [`projeler.$.${k}`, v])
   );
   try {
     await dbConnect();
-    const updatedIsletme = await IsletmeModel.updateOne(
+    const result = await IsletmeModel.updateOne(
       { _id: isletmeId, "projeler._id": projeId },
       { $set: newData }
     );
-    if (!updatedIsletme) {
-      return { msg: "İşletme bulunamadı", status: false };
+    if (result.matchedCount === 0) {
+      return { msg: "İşletme veya proje bulunamadı", status: false };
     }
     revalidatePath(`/`);
     revalidatePath(`/projeler`);
