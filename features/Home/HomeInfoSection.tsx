@@ -40,10 +40,7 @@ const HomeInfoSection: React.FC<HomeInfoSectionProps> = ({ isletme }) => {
             <HomeInfoBox data={isletme.yetkili} title="Yetkili :" />
             <HomeInfoBox data={isletme.mail} title="Mail :" />
             <Stack direction={"row"} spacing={1} alignItems="baseline">
-              <Typography
-                variant="subtitle1"
-                sx={{ color: "primary.main", fontWeight: 600 }}
-              >
+              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
                 Telefon :
               </Typography>
               <Box>
@@ -73,11 +70,7 @@ const HomeInfoSection: React.FC<HomeInfoSectionProps> = ({ isletme }) => {
             <HomeInfoBox data={isletme.uets} title="UETS :" />
           </Stack>
 
-          <HomeInfoBox
-            data={totalPayment}
-            currencySymbol="TL"
-            title="Toplam Ödeme :"
-          />
+          <HomeInfoBox data={totalPayment} para="TL" title="Toplam Ödeme :" />
         </Stack>
       </Grid>
     </Card>
