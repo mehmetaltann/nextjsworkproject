@@ -1,37 +1,42 @@
 import { Typography, Stack } from "@mui/material";
-import { Fragment, memo } from "react";
+import { memo } from "react";
 
 interface InfoBoxProps {
-  data: any;
+  data: string | number | null | undefined;
   title: string | null | undefined;
-  para?: "para" | "money";
+  currencySymbol?: string;
 }
 
-const HomeInfoBox: React.FC<InfoBoxProps> = ({ data, title, para = "para" }) => {
+const HomeInfoBox: React.FC<InfoBoxProps> = ({
+  data,
+  title,
+  currencySymbol,
+}) => {
+  let formattedData = data;
+
+  if (typeof data === "number" && currencySymbol) {
+    formattedData = new Intl.NumberFormat("tr-TR", {
+      minimumFractionDigits: 2,
+    }).format(data);
+    formattedData = `${formattedData} ${currencySymbol}`;
+  } else if (data === null || data === undefined) {
+    formattedData = "";
+  }
+
   return (
-    <Fragment>
-      <Stack direction="row" spacing={1} alignItems={"center"}>
+    <Stack direction="row" spacing={1} alignItems={"center"}>
+      {title && (
         <Typography
           variant="subtitle1"
           sx={{ color: "primary.main", fontWeight: 600 }}
         >
           {title}
         </Typography>
-        {para === "para" ? (
-          <Typography sx={{ color: "primary.main" }} variant="body1">
-            {data ? data : ""}
-          </Typography>
-        ) : (
-          <Typography sx={{ color: "primary.main" }} variant="body1">
-            {data
-              ? `${new Intl.NumberFormat("tr-TR", {
-                  minimumFractionDigits: 2,
-                }).format(data)} TL`
-              : ""}
-          </Typography>
-        )}
-      </Stack>
-    </Fragment>
+      )}
+      <Typography sx={{ color: "primary.main" }} variant="body1">
+        {formattedData}
+      </Typography>
+    </Stack>
   );
 };
 

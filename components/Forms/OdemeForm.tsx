@@ -5,7 +5,7 @@ import FormSelect from "./ui/FormSelect";
 import SendIcon from "@mui/icons-material/Send";
 import { Form, Formik, Field } from "formik";
 import { Stack, MenuItem, Button } from "@mui/material";
-import { Fragment, useEffect, useCallback, useState } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { fetchDesteks } from "@/app/actions/fetchData";
 import { Isletme, Parameter, OdemeWithoutId } from "@/lib/types/types";
 
@@ -41,7 +41,9 @@ const OdemeForm: React.FC<OdemeFormProps> = ({
 
   const validateSchema = Yup.object().shape({
     karekod: Yup.string().required("Boş Olamaz"),
-    tutar: Yup.number().required("Boş Olamaz"),
+    tutar: Yup.number()
+      .required("Boş Olamaz")
+      .typeError("Geçerli bir sayı girin"),
   });
 
   return (
@@ -55,16 +57,16 @@ const OdemeForm: React.FC<OdemeFormProps> = ({
         <Form>
           <Stack spacing={2} sx={{ pl: 1 }}>
             {updateForm === 0 && (
-              <Fragment>
+              <>
                 <Field name="projeId" component={FormSelect} label="Program">
-                  {isletme.projeler?.map(
-                    ({ program, baslamaTarihi, _id }, index) => (
+                  {isletme.projeler
+                    ?.filter((proje) => proje.durum === "Devam Ediyor")
+                    .map(({ program, baslamaTarihi, _id }, index) => (
                       <MenuItem value={_id} key={index}>
                         {program} -{" "}
                         {new Date(baslamaTarihi).toLocaleDateString()}
                       </MenuItem>
-                    )
-                  )}
+                    ))}
                 </Field>
                 <Field name="destek" component={FormSelect} label="Destek">
                   {destekler.map(({ isim }, index) => (
@@ -73,7 +75,7 @@ const OdemeForm: React.FC<OdemeFormProps> = ({
                     </MenuItem>
                   ))}
                 </Field>
-              </Fragment>
+              </>
             )}
 
             <Stack direction={{ md: "row" }} spacing={1}>

@@ -50,7 +50,7 @@ const IsletmeForm: React.FC<IsletmeFormProps> = ({
       onSubmit={submitHandler}
       validationSchema={validateSchema}
     >
-      {({ values }) => (
+      {() => (
         <Form>
           <Stack spacing={2} sx={{ pl: 1 }}>
             <FormTextField

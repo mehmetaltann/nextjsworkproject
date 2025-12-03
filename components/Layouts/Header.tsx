@@ -1,10 +1,12 @@
 "use client";
-import MenuIcon from "@mui/icons-material/Menu";
 import ArchitectureIcon from "@mui/icons-material/Architecture";
+import MenuIcon from "@mui/icons-material/Menu";
 import profileImg from "../../lib/assets/img/profile.jpg";
+import Link from "next/link";
+import Image from "next/image";
 import { useState, MouseEvent } from "react";
 import { useRouter } from "next/navigation";
-
+import { signOut } from "next-auth/react";
 import {
   Menu,
   AppBar,
@@ -15,17 +17,14 @@ import {
   Container,
   Button,
   MenuItem,
-  Avatar,
 } from "@mui/material";
-import { signOut } from "next-auth/react";
-import Link from "next/link";
-import Image from "next/image";
 
 interface Page {
   title: string;
   link: string;
 }
 
+// 1. Statik Veriler
 const pages: Page[] = [
   { title: "ANASAYFA", link: "/" },
   { title: "PROJELER", link: "projeler" },
@@ -33,10 +32,18 @@ const pages: Page[] = [
   { title: "İŞLETMELER", link: "isletmeler" },
 ];
 
+const commonTitleStyles = {
+  mr: 2,
+  fontFamily: "monospace",
+  fontWeight: 700,
+  letterSpacing: ".3rem",
+  color: "inherit",
+  textDecoration: "none",
+};
+
 const NavBar: React.FC = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-  const router = useRouter();
 
   const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -54,36 +61,35 @@ const NavBar: React.FC = () => {
     setAnchorElUser(null);
   };
 
+  const handleSignOut = () => {
+    handleCloseUserMenu();
+    signOut({ callbackUrl: "/login", redirect: true });
+  };
+
   return (
     <AppBar position="static" color="primary">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
+          {/* Logo ve Başlık (Masaüstü) */}
           <ArchitectureIcon
             sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
           />
           <Typography
             variant="h6"
             noWrap
-            component="a"
+            component={Link}
             href="/"
-            sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
+            sx={{ display: { xs: "none", md: "flex" }, ...commonTitleStyles }}
           >
             ALTAN - WORKAPP
           </Typography>
 
+          {/* Mobil Menü Butonu */}
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
+              aria-label="Toggle navigation menu"
+              aria-controls="menu-appbar-nav"
               aria-haspopup="true"
               onClick={handleOpenNavMenu}
               color="inherit"
@@ -91,30 +97,22 @@ const NavBar: React.FC = () => {
               <MenuIcon />
             </IconButton>
             <Menu
-              id="menu-appbar"
+              id="menu-appbar-nav"
               anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
+              anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
               keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
+              transformOrigin={{ vertical: "top", horizontal: "left" }}
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: "block", md: "none" },
-              }}
+              sx={{ display: { xs: "block", md: "none" } }}
             >
+              {/* Mobil Navigasyon Öğeleri - Link ve onClick Temizliği */}
               {pages.map(({ title, link }) => (
                 <MenuItem
                   key={title}
-                  onClick={() => {
-                    router.push(`/${link}`);
-                    handleCloseNavMenu();
-                  }}
+                  onClick={handleCloseNavMenu}
+                  component={Link}
+                  href={link === "/" ? "/" : `/${link}`}
                 >
                   <Typography textAlign="center">{title}</Typography>
                 </MenuItem>
@@ -122,28 +120,25 @@ const NavBar: React.FC = () => {
             </Menu>
           </Box>
 
+          {/* Logo ve Başlık (Mobil) */}
           <ArchitectureIcon
             sx={{ display: { xs: "flex", md: "none" }, mr: 1 }}
           />
           <Typography
             variant="h6"
             noWrap
-            component="a"
+            component={Link}
             href="/"
             sx={{
-              mr: 2,
               display: { xs: "flex", md: "none" },
               flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
+              ...commonTitleStyles,
             }}
           >
             Mehmet ALTAN
           </Typography>
 
+          {/* Masaüstü Navigasyon Butonları - Link Kullanımı */}
           <Box
             sx={{
               flexGrow: 1,
@@ -156,7 +151,8 @@ const NavBar: React.FC = () => {
             {pages.map(({ title, link }) => (
               <Button
                 key={title}
-                onClick={() => router.push(`/${link}`)}
+                component={Link}
+                href={link === "/" ? "/" : `/${link}`}
                 sx={{
                   my: 2,
                   color: "white",
@@ -170,60 +166,56 @@ const NavBar: React.FC = () => {
             ))}
           </Box>
 
+          {/* Kullanıcı Profili ve Ayarlar Menüsü */}
           <Box sx={{ flexGrow: 0 }}>
             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
               <Box
                 sx={{
                   position: "relative",
-                  width: "100%",
-                  textAlign: "center",
-                  borderRadius: "100%",
+                  width: 50,
+                  height: 50,
+                  borderRadius: "50%",
                   overflow: "hidden",
                 }}
               >
                 <Image
                   src={profileImg}
-                  height={"50"}
-                  width={"50"}
+                  fill={true}
                   alt="profilepic"
-                  objectFit="cover"
+                  sizes="50px"
+                  style={{ objectFit: "cover" }}
                 />
               </Box>
             </IconButton>
 
             <Menu
               sx={{ mt: "45px" }}
-              id="menu-appbar"
+              id="menu-appbar-user"
               anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
+              anchorOrigin={{ vertical: "top", horizontal: "right" }}
               keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
+              transformOrigin={{ vertical: "top", horizontal: "right" }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              <MenuItem onClick={() => router.push("/parametreler")}>
-                <Link href={"/parametreler"} style={{ textDecoration: "none" }}>
-                  <Typography textAlign="center">Parametreler</Typography>
-                </Link>
-              </MenuItem>
-
-              <MenuItem onClick={() => router.push("/register")}>
-                <Link href={"/register"} style={{ textDecoration: "none" }}>
-                  <Typography textAlign="center">Yeni Kullanıcı</Typography>
-                </Link>
+              {/* Kullanıcı Menüsü Öğeleri - Link ve onClick Temizliği */}
+              <MenuItem
+                onClick={handleCloseUserMenu}
+                component={Link}
+                href={"/parametreler"}
+              >
+                <Typography textAlign="center">Parametreler</Typography>
               </MenuItem>
 
               <MenuItem
-                onClick={() => {
-                  signOut({ callbackUrl: "/login", redirect: true });
-                }}
+                onClick={handleCloseUserMenu}
+                component={Link}
+                href={"/register"}
               >
+                <Typography textAlign="center">Yeni Kullanıcı</Typography>
+              </MenuItem>
+
+              <MenuItem onClick={handleSignOut}>
                 <Typography textAlign="center">Çıkış Yap</Typography>
               </MenuItem>
             </Menu>

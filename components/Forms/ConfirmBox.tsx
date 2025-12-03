@@ -18,6 +18,12 @@ interface OnayBoxProps {
 
 const ConfirmBox = ({ onayBoxInf, setOnayBoxInf }: OnayBoxProps) => {
   const { isOpen, content, onClickHandler, functionData } = onayBoxInf;
+
+  const handleConfirm = () => {
+    onClickHandler(functionData);
+    handleDialogClose();
+  };
+
   const handleDialogClose = () => {
     setOnayBoxInf((prevFormData: any) => ({
       ...prevFormData,
@@ -42,11 +48,7 @@ const ConfirmBox = ({ onayBoxInf, setOnayBoxInf }: OnayBoxProps) => {
         <Button onClick={handleDialogClose} color="error">
           Hayır
         </Button>
-        <Button
-          onClick={() => onClickHandler(functionData)}
-          color="success"
-          autoFocus
-        >
+        <Button onClick={handleConfirm} color="success" autoFocus>
           Evet
         </Button>
       </DialogActions>
